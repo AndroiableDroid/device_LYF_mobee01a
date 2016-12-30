@@ -109,5 +109,9 @@
         <item>"/system/framework/arm64/boot.vdex"</item>
         <item>"/system/framework/arm64/boot-core-libart.oat"</item>
         <item>"/system/framework/arm64/boot-core-libart.vdex"</item>
+        <item>"/data/dalvik-cache/arm64/system@framework@boot.oat"</item>
+        <item>"/data/dalvik-cache/arm64/system@framework@boot.vdex"</item>
+        <item>"/data/dalvik-cache/arm64/system@framework@services.jar@classes.dex"</item>
+        <item>"/data/dalvik-cache/arm64/system@framework@services.jar@classes.vdex"</item>
    </string-array>
 </resources>
