@@ -2436,7 +2436,7 @@ bool QCamera2HardwareInterface::processMTFDumps(qcamera_jpeg_evt_payload_t *evt)
         } else {
             strlcpy(name, "0", CAM_FN_CNT);
         }
-        CAM_DUMP_TO_FILE("/data/misc/camera/multiTouchFocus", name, index, "jpg",
+        CAM_DUMP_TO_FILE("/data/vendor/qcam/multiTouchFocus", name, index, "jpg",
                 dataPtr, dataLen);
         CDBG("%s:%d] Dump the image %d %d allFocusImage %d", __func__, __LINE__,
                 getOutputImageCount(), index, allFocusImage);

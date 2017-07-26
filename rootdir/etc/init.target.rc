@@ -26,7 +26,6 @@
 #
 
 on boot
-
     # Touchscreen
     chown system system /sys/mip4_ts/wakeup_gesture
     chmod 0666 /sys/mip4_ts/wakeup_gesture
@@ -36,6 +35,9 @@ service baseband-sh /vendor/bin/sh /vendor/etc/set_baseband.sh
     user root
     oneshot
 
-
 on property:sys.boot_completed=1
     start baseband-sh
+
+on post-fs-data
+    # Create folder for our hex edited mm-qcamera-daemon and camera blobs
+    mkdir /data/vendor/qcam 0770 camera camera
