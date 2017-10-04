@@ -673,6 +673,7 @@ int QCamera2HardwareInterface::take_picture(struct camera_device *device)
     }
 
     hw->unlockAPI();
+    hw->mLastCaptureTime = systemTime();
     CDBG_HIGH("[KPI Perf] %s: X", __func__);
     return ret;
 }
@@ -1030,7 +1031,9 @@ QCamera2HardwareInterface::QCamera2HardwareInterface(uint32_t cameraId)
       mNumPreviewFaces(-1),
       mAdvancedCaptureConfigured(false),
       mFPSReconfigure(false),
-      mVideoMem(NULL)
+      mVideoMem(NULL),
+      mLastAFScanTime(0),
+      mLastCaptureTime(0)
 {
 #ifdef TARGET_TS_MAKEUP
     mMakeUpBuf = NULL;
