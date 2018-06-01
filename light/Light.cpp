@@ -54,10 +54,6 @@ static void set(std::string path, int value) {
     set(path, std::to_string(value));
 }
 
-static inline uint32_t scaleBrightness(uint32_t brightness, uint32_t maxBrightness) {
-    return brightness * maxBrightness / 0xFF;
-}
-
 static void handleBacklight(const LightState& state) {
     uint32_t brightness = state.color & 0xFF;
     set(LCD_LED BRIGHTNESS, brightness);
