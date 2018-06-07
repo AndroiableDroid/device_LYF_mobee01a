@@ -38,9 +38,6 @@ const static std::string kBlueLedPath = "/sys/class/leds/blue/brightness";
 const static std::string kRedBlinkPath = "/sys/class/leds/red/blink";
 const static std::string kGreenBlinkPath = "/sys/class/leds/green/blink";
 const static std::string kBlueBlinkPath = "/sys/class/leds/blue/blink";
-const static std::string kRedLedTimePath = "/sys/class/leds/red/led_time";
-const static std::string kGreenLedTimePath = "/sys/class/leds/green/led_time";
-const static std::string kBlueLedTimePath = "/sys/class/leds/blue/led_time";
 
 int main() {
     uint32_t lcdMaxBrightness = 255;
@@ -102,33 +99,11 @@ int main() {
                    << " (" << strerror(errno) << ")";
         return -errno;
     }
-
-    std::ofstream redLedTime(kRedLedTimePath);
-    if (!redLedTime) {
-        LOG(ERROR) << "Failed to open " << kRedLedTimePath << ", error=" << errno
-                   << " (" << strerror(errno) << ")";
-        return -errno;
-    }
-
-    std::ofstream greenLedTime(kGreenLedTimePath);
-    if (!greenLedTime) {
-        LOG(ERROR) << "Failed to open " << kGreenLedTimePath << ", error=" << errno
-                   << " (" << strerror(errno) << ")";
-        return -errno;
-    }
-
-    std::ofstream blueLedTime(kBlueLedTimePath);
-    if (!blueBlink) {
-        LOG(ERROR) << "Failed to open " << kBlueLedTimePath << ", error=" << errno
-                   << " (" << strerror(errno) << ")";
-        return -errno;
-    }
-
+    
     android::sp<ILight> service = new Light(
             {std::move(lcdBacklight), lcdMaxBrightness},
             std::move(redLed), std::move(greenLed), std::move(blueLed),
-            std::move(redBlink), std::move(greenBlink), std::move(blueBlink),
-            std::move(redLedTime), std::move(greenLedTime), std::move(blueLedTime));
+            std::move(redBlink), std::move(greenBlink), std::move(blueBlink));
 
     configureRpcThreadpool(1, true);
 
