@@ -161,18 +161,14 @@ namespace implementation {
 
 Light::Light(std::pair<std::ofstream, uint32_t>&& lcd_backlight,
              std::ofstream&& red_led, std::ofstream&& green_led, std::ofstream&& blue_led,
-             std::ofstream&& red_blink, std::ofstream&& green_blink, std::ofstream&& blue_blink,
-             std::ofstream&& red_led_time, std::ofstream&& green_led_time, std::ofstream&& blue_led_time)
+             std::ofstream&& red_blink, std::ofstream&& green_blink, std::ofstream&& blue_blink)
     : mLcdBacklight(std::move(lcd_backlight)),
       mRedLed(std::move(red_led)),
       mGreenLed(std::move(green_led)),
       mBlueLed(std::move(blue_led)),
       mRedBlink(std::move(red_blink)),
       mGreenBlink(std::move(green_blink)),
-      mBlueBlink(std::move(blue_blink)),
-      mRedLedTime(std::move(red_led_time)),
-      mGreenLedTime(std::move(green_led_time)),
-      mBlueLedTime(std::move(blue_led_time)) {
+      mBlueBlink(std::move(blue_blink)) {
     auto attnFn(std::bind(&Light::setAttentionLight, this, std::placeholders::_1));
     auto backlightFn(std::bind(&Light::setLcdBacklight, this, std::placeholders::_1));
     auto batteryFn(std::bind(&Light::setBatteryLight, this, std::placeholders::_1));
@@ -322,11 +318,8 @@ void Light::setSpeakerLightLocked(const LightState& state) {
     }
 
     // Do everything with the lights out, then turn up the brightness
-    mRedLedTime << breath_pattern << std::endl;
     mRedBlink << (blink && red ? 1 : 0) << std::endl;
-    mGreenLedTime << breath_pattern << std::endl;
     mGreenBlink << (blink && green ? 1 : 0) << std::endl;
-    mBlueLedTime << breath_pattern << std::endl;
     mBlueBlink << (blink && blue ? 1 : 0) << std::endl;
 
     mRedLed << red << std::endl;
