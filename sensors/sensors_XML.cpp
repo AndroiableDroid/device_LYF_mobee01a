@@ -29,14 +29,17 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sensors_extension.h>
 #include "sensors_XML.h"
-#include <cutils/log.h>
+#include <log/log.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include "unistd.h"
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <private/android_filesystem_config.h>
+#include <sys/types.h>
+#include <grp.h>
+#include <pwd.h>
+#include <cutils/android_filesystem_config.h>
 #include <string.h>
 
 #define SENSOR_XML_ROOT_ELEMENT "sensors"
@@ -300,10 +303,10 @@ int sensors_XML :: write_sensors_params(struct sensor_t *sensor, struct cal_resu
     }
     
     if (fnum == 0) {
-        if (getuid() != AID_ROOT) {
+        if (getuid() != getpwnam("root")->pw_uid) {
             goto exit;
         }
-        err = chown(filepath[fnum], AID_ROOT, AID_SYSTEM);
+        err = chown(filepath[fnum], getpwnam("root")->pw_uid, getgrnam("system")->gr_gid);
         if (err != 0) {
             ALOGE("chown %s failed %s", filepath[fnum], strerror(errno));
             xmlFreeDoc(mdoc);

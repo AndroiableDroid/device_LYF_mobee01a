@@ -62,7 +62,7 @@ else
     LOCAL_C_INCLUDES += external/icu4c/common
 endif
 
-LOCAL_SHARED_LIBRARIES := liblog libcutils libdl libxml2 libutils
+LOCAL_SHARED_LIBRARIES := liblog libcutils libdl libxml2 libutils libhardware
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -85,6 +85,7 @@ LOCAL_SHARED_LIBRARIES := \
     libdl \
     liblog \
     libutils \
+    libhardware
 
 LOCAL_STRIP_MODULE := false
 
@@ -122,7 +123,7 @@ LOCAL_SRC_FILES := \
 		   algo/common/compass/AKFS_Direction.c \
 		   algo/common/compass/AKFS_VNorm.c
 
-LOCAL_SHARED_LIBRARIES := liblog libcutils
+LOCAL_SHARED_LIBRARIES := liblog libcutils libhardware
 LOCAL_MULTILIB := 64
 LOCAL_STATIC_LIBRARIES := libst480
 LOCAL_CFLAGS += -Dst480_compass
