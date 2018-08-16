@@ -51,6 +51,9 @@ LZMA_RAMDISK_TARGETS := recovery
 TARGET_KERNEL_SOURCE := kernel/LYF/mobee01a
 TARGET_KERNEL_CONFIG := lineageos_mobee01a_defconfig
 
+# Manifest
+DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
+
 # LineageHW
 BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/lineagehw
 
