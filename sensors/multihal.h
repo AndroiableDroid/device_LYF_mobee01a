@@ -22,7 +22,7 @@
 static const char* MULTI_HAL_CONFIG_FILE_PATH = "/vendor/etc/sensors/hals.conf";
 
 // Depracated because system partition HAL config file does not satisfy treble requirements.
-static const char* DEPRECATED_MULTI_HAL_CONFIG_FILE_PATH = "/vendor/etc/sensors/hals.conf";
+static const char* DEPRECATED_MULTI_HAL_CONFIG_FILE_PATH = "/system/etc/sensors/hals.conf";
 
 struct sensors_module_t *get_multi_hal_module_info(void);
 
