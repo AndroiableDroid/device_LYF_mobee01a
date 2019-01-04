@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015, The Linux Foundataion. All rights reserved.
+	/* Copyright (c) 2012-2015, The Linux Foundataion. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -508,6 +508,7 @@ int32_t QCameraStateMachine::procEvtPreviewStoppedState(qcamera_sm_evt_enum_t ev
             ALOGW("Free video handle %d %d", evt, m_state);
             QCameraVideoMemory::closeNativeHandle((const void *)payload);
         }
+        [[clang::fallthrough]];
     case QCAMERA_SM_EVT_START_RECORDING:
     case QCAMERA_SM_EVT_STOP_RECORDING:
     case QCAMERA_SM_EVT_PREPARE_SNAPSHOT:
@@ -845,6 +846,7 @@ int32_t QCameraStateMachine::procEvtPreviewReadyState(qcamera_sm_evt_enum_t evt,
             ALOGW("Free video handle %d %d", evt, m_state);
             QCameraVideoMemory::closeNativeHandle((const void *)payload);
         }
+        [[clang::fallthrough]];
     case QCAMERA_SM_EVT_START_NODISPLAY_PREVIEW:
     case QCAMERA_SM_EVT_START_RECORDING:
     case QCAMERA_SM_EVT_STOP_RECORDING:
@@ -1234,6 +1236,7 @@ int32_t QCameraStateMachine::procEvtPreviewingState(qcamera_sm_evt_enum_t evt,
             ALOGW("Free video handle %d %d", evt, m_state);
             QCameraVideoMemory::closeNativeHandle((const void *)payload);
         }
+        [[clang::fallthrough]];
     case QCAMERA_SM_EVT_CANCEL_PICTURE:
     case QCAMERA_SM_EVT_STOP_RECORDING:
     case QCAMERA_SM_EVT_RELEASE:
