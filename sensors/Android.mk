@@ -40,4 +40,34 @@ LOCAL_STRIP_MODULE := false
 
 include $(BUILD_SHARED_LIBRARY)
 
+include $(CLEAR_VARS)
+LOCAL_MODULE_RELATIVE_PATH := hw
+LOCAL_PROPRIETARY_MODULE := true
+LOCAL_MODULE := android.hardware.sensors@1.0-service.mobee01a
+LOCAL_INIT_RC := android.hardware.sensors@1.0-service.mobee01a.rc
+LOCAL_SRC_FILES := \
+        service.cpp \
+
+LOCAL_SHARED_LIBRARIES := \
+        liblog \
+        libcutils \
+        libdl \
+        libbase \
+        libutils \
+
+LOCAL_SHARED_LIBRARIES += \
+        libhidlbase \
+        libhidltransport \
+        android.hardware.sensors@1.0 \
+
+include $(BUILD_EXECUTABLE)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := hals.conf
+LOCAL_MODULE_TAGS  := optional eng
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := hals.conf
+LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)/sensors
+include $(BUILD_PREBUILT)
+
 include $(call all-makefiles-under, $(LOCAL_PATH))
