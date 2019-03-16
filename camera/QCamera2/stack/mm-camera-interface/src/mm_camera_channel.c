@@ -276,6 +276,11 @@ static void mm_channel_process_stream_buf(mm_camera_cmdcb_t * cmd_cb,
                 uint32_t start = cmd_cb->u.gen_cmd.payload[0];
                 CDBG_HIGH("%s:%d] MM_CAMERA_GENERIC_CMDTYPE_FLASH_BRACKETING %u",
                     __func__, __LINE__, start);
+#ifdef MOBEE_PLUS
+
+#else
+                mm_channel_superbuf_flush(ch_obj, &ch_obj->bundle.superbuf_queue, CAM_STREAM_TYPE_DEFAULT);
+#endif
                 if (start) {
                     CDBG_HIGH("%s:%d] need flash bracketing",
                         __func__, __LINE__);
@@ -289,6 +294,11 @@ static void mm_channel_process_stream_buf(mm_camera_cmdcb_t * cmd_cb,
                 uint32_t start = cmd_cb->u.gen_cmd.payload[0];
                 CDBG_HIGH("%s:%d] MM_CAMERA_GENERIC_CMD_TYPE_ZOOM_1X %u",
                     __func__, __LINE__, start);
+#ifdef MOBEE_PLUS
+
+#else
+                mm_channel_superbuf_flush(ch_obj, &ch_obj->bundle.superbuf_queue, CAM_STREAM_TYPE_DEFAULT);
+#endif
                 if (start) {
                     CDBG_HIGH("%s:%d] need zoom 1x frame",
                         __func__, __LINE__);

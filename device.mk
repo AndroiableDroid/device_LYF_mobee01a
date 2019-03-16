@@ -56,9 +56,6 @@ PRODUCT_PACKAGES += \
     android.hardware.camera.provider@2.4-impl \
     camera.device@1.0-impl
 
-# Due to multi-density builds, these are set by init
-PRODUCT_SYSTEM_PROPERTY_BLACKLIST := ro.product.model ro.sf.lcd_density
-
 # GPS
 PRODUCT_PACKAGES += \
     gps.msm8916
@@ -131,13 +128,9 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.usb.id.ums_adb=9015 \
     ro.usb.vid=05c6
 
-# Wi-Fi
-PRODUCT_PACKAGES += \
-    libwcnss_qmi
-
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/WCNSS_cfg.dat:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/prima/WCNSS_cfg.dat \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_wlan_nv.bin:$(TARGET_COPY_OUT_VENDOR)/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
 
 # Call the proprietary setup
-$(call inherit-product, vendor/yu/tomato/tomato-vendor.mk)
+$(call inherit-product, vendor/LYF/mobee01a/mobee01a-vendor.mk)

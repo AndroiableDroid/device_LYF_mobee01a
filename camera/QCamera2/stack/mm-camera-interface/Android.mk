@@ -11,7 +11,13 @@ LOCAL_SRC_FILES := \
     src/mm_camera_sock.c \
     src/cam_intf.c
 
-ifeq ($(call is-board-platform-in-list, msm8974 msm8916 msm8226 msm8610 msm8909),true)
+#ckt add for M mobee plus cts test
+ifeq ($(strip $(MOBEEPLUS_ONLY_SUPPORT)),yes)
+LOCAL_CFLAGS  += -DMOBEE_PLUS
+endif
+#ckt add end
+
+ifeq ($(call is-board-platform-in-list,msm8974 msm8916 msm8226 msm8610 msm8909),true)
     LOCAL_CFLAGS += -DVENUS_PRESENT
 endif
 
@@ -40,3 +46,4 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_VENDOR_MODULE := true
 
 include $(BUILD_SHARED_LIBRARY)
+

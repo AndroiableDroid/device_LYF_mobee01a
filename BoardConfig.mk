@@ -18,7 +18,7 @@
 # Inherit from msm8916-common
 include device/cyanogen/msm8916-common/BoardConfigCommon.mk
 
-DEVICE_PATH := device/yu/tomato
+DEVICE_PATH := device/LYF/mobee01a
 
 # Assertions
 TARGET_BOARD_INFO_FILE := $(DEVICE_PATH)/board-info.txt
@@ -27,7 +27,7 @@ TARGET_BOARD_INFO_FILE := $(DEVICE_PATH)/board-info.txt
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 
 # Camera
-BOARD_CAMERA_SENSORS := imx135_cp8675 imx214_cp8675 ov5648_cp8675
+BOARD_CAMERA_SENSORS := gc0310 hi256 imglib imx132 imx134 imx135 imx214 mt9m114 ov13850_q13v06k ov13850 ov16825 ov2680_5987fhq ov2680_cht852b ov2680 ov2680_zs2p80f1 ov2685 ov2720 ov5645 ov5648_oty5f03 ov5648_p5v18g ov5648_q5v22e ov5670_30010a3 ov5670_q5v41b ov5670_qc700 ov7695 ov8825 ov8858_q8v19w_30 ov8858_q8v19w ov8858 ov8865_q8v18a ov9724 pdafcamif pdaf s5k3l1yx s5k3m2xm S5K4E1_13P1BA s5k5e2_F5E2YAU s5k5e2_SFS5C7597 SKUAA_ST_gc0339 skuab_shinetech_gc0339 SKUAB_ST_s5k4e1 skuf_ov12830_p12v01c skuf_ov5648_p5v23c sp1628 t4kb3
 USE_DEVICE_SPECIFIC_CAMERA := true
 
 # Filesystem
@@ -44,20 +44,21 @@ TARGET_NO_RPC := true
 USE_DEVICE_SPECIFIC_GPS := true
 
 # Init
-TARGET_LIBINIT_MSM8916_DEFINES_FILE := $(DEVICE_PATH)/init/init_tomato.cpp
+TARGET_LIBINIT_MSM8916_DEFINES_FILE := $(DEVICE_PATH)/init/init_mobee01a.cpp
 
 # Kernel
 BOARD_DTBTOOL_ARGS := -2
 BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_SEPARATED_DT := true
 LZMA_RAMDISK_TARGETS := recovery
-TARGET_KERNEL_CONFIG := lineageos_tomato_defconfig
+TARGET_KERNEL_SOURCE := kernel/LYF/mobee01a
+TARGET_KERNEL_CONFIG := lineageos_mobee01a_defconfig
 
 # LineageHW
 BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/lineagehw
 
 # Power
-TARGET_POWER_SET_FEATURE_LIB := libpower_set_feature_tomato
+TARGET_POWER_SET_FEATURE_LIB := libpower_set_feature_mobee01a
 
 # Properties
 TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
@@ -78,10 +79,5 @@ endif
 # Widevine
 BOARD_WIDEVINE_OEMCRYPTO_LEVEL := 3
 
-# Wi-Fi
-TARGET_PROVIDES_WCNSS_QMI := true
-WIFI_DRIVER_MODULE_NAME := "wlan"
-WIFI_DRIVER_MODULE_PATH := "/system/lib/modules/wlan.ko"
-
 # Inherit from proprietary files
-include vendor/yu/tomato/BoardConfigVendor.mk
+include vendor/LYF/mobee01a/BoardConfigVendor.mk

@@ -17,7 +17,7 @@
 #ifndef _BDROID_BUILDCFG_H
 #define _BDROID_BUILDCFG_H
 
-#define BTM_DEF_LOCAL_NAME        "YUREKA"
+#define BTM_DEF_LOCAL_NAME        "LS-5015"
 
 #define BLE_VND_INCLUDED          TRUE
 #define BLUETOOTH_QTI_SW          TRUE

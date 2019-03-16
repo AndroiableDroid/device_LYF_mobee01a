@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, device/yu/tomato/full_tomato.mk)
+$(call inherit-product, device/LYF/mobee01a/full_mobee01a.mk)
 
 # Inherit some common LineageOS stuff.
 $(call inherit-product, vendor/lineage/config/common_mini_phone.mk)
@@ -21,15 +21,15 @@ $(call inherit-product, vendor/lineage/config/common_mini_phone.mk)
 # Must define platform variant before including any common things
 TARGET_BOARD_PLATFORM_VARIANT := msm8939
 
-PRODUCT_NAME := lineage_tomato
-BOARD_VENDOR := yu
-PRODUCT_DEVICE := tomato
+PRODUCT_NAME := lineage_mobee01a
+BOARD_VENDOR := LYF
+PRODUCT_DEVICE := mobee01a
 
-PRODUCT_GMS_CLIENTID_BASE := android-micromax
+PRODUCT_GMS_CLIENTID_BASE := android-ckt
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
     PRIVATE_BUILD_DESC="YUREKA-user 5.1.1 LMY49J YOG4PAS8A4 release-keys" \
-    PRODUCT_NAME=YUREKA \
-    TARGET_DEVICE=YUREKA
+    PRODUCT_NAME=LS-5015 \
+    TARGET_DEVICE=LS-5015
 
 BUILD_FINGERPRINT := YU/YUREKA/YUREKA:5.1.1/LMY49J/YOG4PAS8A4:user/release-keys

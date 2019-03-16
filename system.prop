@@ -4,9 +4,13 @@ persist.vendor.audio.fluence.voicecall=true
 persist.vendor.audio.fluence.voicerec=false
 persist.vendor.audio.fluence.speaker=false
 
+# Display
+ro.sf.lcd_density=320
+
 # Camera
 persist.camera.cpp.duplication=false
 persist.camera.hal.debug.mask=0
+
 
 # Radio
 persist.data.target=dpm1

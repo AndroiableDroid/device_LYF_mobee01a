@@ -409,6 +409,16 @@ const char QCameraParameters::KEY_QC_USER_SETTING[] = "user-setting";
 const char QCameraParameters::KEY_QC_WB_CCT_MODE[] = "color-temperature";
 const char QCameraParameters::KEY_QC_WB_GAIN_MODE[] = "rbgb-gains";
 
+/// ALTEK_HAL >>>
+// ENABLE_FOR_NEW_MODE
+#if 1
+const char QCameraParameters::FOCUS_MODE_CONTINUOUS_PICTURE_HYBRID[] = "continuous-picture-hybrid";
+const char QCameraParameters::FOCUS_MODE_CONTINUOUS_VIDEO_HYBRID[] = "continuous-video-hybrid";
+const char QCameraParameters::FOCUS_MODE_AUTO_HYBRID[] = "auto-hybrid";
+const char QCameraParameters::FOCUS_MODE_AUTO_INSTANT_HYBRID[] = "auto-instant";
+#endif
+/// ALTEK_HAL <<<
+
 
 #ifdef TARGET_TS_MAKEUP
 const char QCameraParameters::KEY_TS_MAKEUP[] = "tsmakeup";
@@ -534,6 +544,16 @@ const QCameraParameters::QCameraMap<cam_focus_mode_type>
     { FOCUS_MODE_CONTINUOUS_PICTURE, CAM_FOCUS_MODE_CONTINOUS_PICTURE },
     { FOCUS_MODE_CONTINUOUS_VIDEO,   CAM_FOCUS_MODE_CONTINOUS_VIDEO },
     { FOCUS_MODE_MANUAL_POSITION,    CAM_FOCUS_MODE_MANUAL},
+/// ALTEK_HAL >>>
+// ENABLE_FOR_NEW_MODE
+#if 1
+    { FOCUS_MODE_CONTINUOUS_PICTURE_HYBRID,    CAM_FOCUS_MODE_CONTINOUS_PICTURE_HYBRID},
+    { FOCUS_MODE_CONTINUOUS_VIDEO_HYBRID,    CAM_FOCUS_MODE_CONTINOUS_VIDEO_HYBRID},
+    { FOCUS_MODE_AUTO_HYBRID,    CAM_FOCUS_MODE_AUTO_HYBRID},
+    { FOCUS_MODE_AUTO_INSTANT_HYBRID,    CAM_FOCUS_MODE_AUTO_INSTANT_HYBRID},
+#endif
+/// ALTEK_HAL <<<
+
 };
 
 const QCameraParameters::QCameraMap<cam_effect_mode_type>
@@ -800,8 +820,7 @@ QCameraParameters::QCameraParameters()
       m_bIsLowMemoryDevice(false),
       m_bLowPowerMode(false),
       m_bIsLongshotLimited(false),
-      m_nMaxLongshotNum(-1),
-      mFocusState(CAM_AF_NOT_FOCUSED)
+      m_nMaxLongshotNum(-1)
 {
     char value[PROPERTY_VALUE_MAX];
     // TODO: may move to parameter instead of sysprop
@@ -813,7 +832,7 @@ QCameraParameters::QCameraParameters()
     // For thermal mode, it should be set as system property
     // because system property applies to all applications, while
     // parameters only apply to specific app.
-    property_get("persist.camera.thermal.mode", value, "fps");
+    property_get("persist.camera.thermal.mode", value, "frameskip");
     if (!strcmp(value, "frameskip")) {
         m_ThermalMode = QCAMERA_THERMAL_ADJUST_FRAMESKIP;
     } else {
@@ -898,8 +917,7 @@ QCameraParameters::QCameraParameters(const String8 &params)
     m_bIsLowMemoryDevice(false),
     m_bLowPowerMode(false),
     m_bIsLongshotLimited(false),
-    m_nMaxLongshotNum(-1),
-    mFocusState(CAM_AF_NOT_FOCUSED)
+    m_nMaxLongshotNum(-1)
 {
     memset(&m_LiveSnapshotSize, 0, sizeof(m_LiveSnapshotSize));
     m_pTorch = NULL;
@@ -1564,22 +1582,6 @@ int32_t QCameraParameters::setLiveSnapshotSize(const QCameraParameters& params)
             }
         }
     }
-
-    // QCamera is guaranteed to support liveshot at video resolution, even
-    // though it may not appear in the livesnapshot_sizes_tbl.  In L, if the
-    // user sets a picture size larger than the supported liveshot resolution,
-    // the resulting liveshot MUST be at least as large as the video
-    // resolution (android.hardware.cts.CameraTest#testVideoSnapshot).
-    int videoWidth = 0, videoHeight = 0;
-    int pictureWidth = 0, pictureHeight = 0;
-    params.getVideoSize(&videoWidth, &videoHeight);
-    params.getPictureSize(&pictureWidth, &pictureHeight);
-    if ((pictureWidth > m_LiveSnapshotSize.width && m_LiveSnapshotSize.width < videoWidth) ||
-        (pictureHeight > m_LiveSnapshotSize.height && m_LiveSnapshotSize.height < videoHeight)) {
-        m_LiveSnapshotSize.width = videoWidth;
-        m_LiveSnapshotSize.height = videoHeight;
-    }
-
     CDBG("%s: live snapshot size %d x %d", __func__,
           m_LiveSnapshotSize.width, m_LiveSnapshotSize.height);
 
@@ -5452,6 +5454,11 @@ int32_t QCameraParameters::setPreviewFpsRange(int min_fps,
     CDBG("%s: E minFps = %d, maxFps = %d , vid minFps = %d, vid maxFps = %d",
                 __func__, min_fps, max_fps, vid_min_fps, vid_max_fps);
 
+    if (max_fps >= 24000 && min_fps == max_fps) {
+        CDBG_HIGH("min_fps %d same as max_fps %d, setting min_fps to 7000", min_fps, max_fps);
+        min_fps = 7000;
+    }
+
     if(fixedFpsValue != 0) {
       min_fps = max_fps = vid_min_fps = vid_max_fps = (int)fixedFpsValue*1000;
     }
@@ -7844,10 +7851,6 @@ int32_t QCameraParameters::updateFlash(bool commitSettings)
 
     if (value != mFlashDaemonValue) {
 
-        if (isAFRunning()) {
-            CDBG("%s: AF is running, cancel AF before changing flash mode ", __func__);
-            m_pCamOpsTbl->ops->cancel_auto_focus(m_pCamOpsTbl->camera_handle);
-        }
         ALOGV("%s: Setting Flash value %d", __func__, value);
         rc = AddSetParmEntryToBatch(m_pParamBuf,
                                       CAM_INTF_PARM_LED_MODE,
@@ -10700,25 +10703,6 @@ uint8_t QCameraParameters::getLongshotStages()
         numStages = propStages;
     }
     return numStages;
-}
-
-/*===========================================================================
-* FUNCTION   : isAFRunning
-*
-* DESCRIPTION: if AF is in progress while in Auto/Macro focus modes
-*
-* PARAMETERS : none
-*
-* RETURN     : true: AF in progress
-*              false: AF not in progress
-*==========================================================================*/
-bool QCameraParameters::isAFRunning()
-{
-    bool isAFInProgress = ((mFocusState == CAM_AF_SCANNING) &&
-                          ((mFocusMode == CAM_FOCUS_MODE_AUTO) ||
-                           (mFocusMode == CAM_FOCUS_MODE_MACRO)));
-
-    return isAFInProgress;
 }
 
 }; // namespace qcamera

@@ -1495,6 +1495,8 @@ uint8_t get_num_of_cameras()
     uint32_t temp;
     uint32_t log_level;
     uint32_t debug_mask;
+	char temp_dev_name[MM_CAMERA_DEV_NAME_LEN];
+	struct camera_info temp_info;
 
     /*  Higher 4 bits : Value of Debug log level (Default level is 1 to print all CDBG_HIGH)
         Lower 28 bits : Control mode for sub module logging(Only 3 sub modules in HAL)
@@ -1641,6 +1643,17 @@ uint8_t get_num_of_cameras()
 
     get_sensor_info();
     sort_camera_info(g_cam_ctrl.num_cam);
+
+	/*if front camera probe earlier than back camera, switch front camera and back camera dev_name and info*/
+	if (g_cam_ctrl.num_cam > 2) {
+		memcpy(temp_dev_name, g_cam_ctrl.video_dev_name[2], sizeof(temp_dev_name));
+		memcpy(g_cam_ctrl.video_dev_name[2], g_cam_ctrl.video_dev_name[1], sizeof(temp_dev_name));
+		memcpy(g_cam_ctrl.video_dev_name[1], temp_dev_name, sizeof(temp_dev_name));
+		memcpy(&temp_info, &g_cam_ctrl.info[2], sizeof(temp_info));
+		memcpy(&g_cam_ctrl.info[2], &g_cam_ctrl.info[1], sizeof(temp_info));
+		memcpy(&g_cam_ctrl.info[1], &temp_info, sizeof(temp_info));
+	}
+
     /* unlock the mutex */
     pthread_mutex_unlock(&g_intf_lock);
     CDBG("%s: num_cameras=%d\n", __func__, (int)g_cam_ctrl.num_cam);
@@ -1747,6 +1760,23 @@ uint8_t check_cam_access(uint8_t camera_idx)
     //if we have atleast 1 YUV sensor. Both BAYER is not supported.
     //TBD : For >2 sensors, we have to check sensor type along with VFE
     //capability and is not tested so far. So, return TRUE for now.
+//ckt add for M mobee plus cts test
+#ifdef MOBEE_PLUS
+    if (g_cam_ctrl.num_cam == 3 && camera_idx < 2) {
+        memset(prop, 0, sizeof(prop));
+        property_get("persist.camera.pip.support", prop, "1");
+        if (g_cam_ctrl.cam_obj[1 - camera_idx] == NULL) {
+            //Other camera device not opened. So, blindly allow this camera access.
+            allow = TRUE;
+        } else if (atoi(prop)) {
+            if (g_cam_ctrl.is_yuv[camera_idx] || g_cam_ctrl.is_yuv[1 - camera_idx]) {
+                allow = TRUE;
+            }
+        }
+    } else {
+        allow = TRUE;
+    }
+#else
     if (g_cam_ctrl.num_cam == 2 && camera_idx < 2) {
         memset(prop, 0, sizeof(prop));
         property_get("persist.camera.pip.support", prop, "1");
@@ -1761,6 +1791,7 @@ uint8_t check_cam_access(uint8_t camera_idx)
     } else {
         allow = TRUE;
     }
+#endif
     pthread_mutex_unlock(&g_intf_lock);
     return allow;
 }

@@ -18,8 +18,8 @@
 
 set -e
 
-DEVICE=tomato
-VENDOR=yu
+DEVICE=mobee01a
+VENDOR=LYF
 
 INITIAL_COPYRIGHT_YEAR=2015
 
