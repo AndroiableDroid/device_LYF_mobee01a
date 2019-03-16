@@ -25,5 +25,5 @@ $(call inherit-product, device/LYF/mobee01a/device.mk)
 PRODUCT_DEVICE := mobee01a
 PRODUCT_NAME := full_mobee01a
 PRODUCT_BRAND := LYF
-PRODUCT_MODEL := LS-5015
+PRODUCT_MODEL := Water 8
 PRODUCT_MANUFACTURER := LYF

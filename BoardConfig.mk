@@ -20,9 +20,6 @@ include device/cyanogen/msm8916-common/BoardConfigCommon.mk
 
 DEVICE_PATH := device/LYF/mobee01a
 
-# Assertions
-TARGET_BOARD_INFO_FILE := $(DEVICE_PATH)/board-info.txt
-
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 
@@ -56,9 +53,6 @@ TARGET_KERNEL_CONFIG := lineageos_mobee01a_defconfig
 
 # LineageHW
 BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/lineagehw
-
-# Power
-TARGET_POWER_SET_FEATURE_LIB := libpower_set_feature_mobee01a
 
 # Properties
 TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
