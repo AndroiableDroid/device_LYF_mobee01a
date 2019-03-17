@@ -26,23 +26,66 @@
 #
 
 on boot
-    # change file owner for factory test
-    chown system system /sys/devices/virtual/touchscreen/touchscreen_dev/firmware_version
-    chown system system /sys/devices/virtual/touchscreen/touchscreen_dev/firmware_update
-    chown system system /sys/devices/virtual/touchscreen/touchscreen_dev/calibrate
+
+     # ltr553 light
+    chown system system /sys/class/sensors/ltr553_light/calibrate
+    chown system system /sys/class/sensors/ltr553_light/enable
+    chown system system /sys/class/sensors/ltr553_light/enable_wakeup
+    chown system system /sys/class/sensors/ltr553_light/flush
+    chown system system /sys/class/sensors/ltr553_light/max_latency
+    chown system system /sys/class/sensors/ltr553_light/poll_delay
+    chmod 0664 /sys/class/sensors/ltr553_light/calibrate
+    chmod 0664 /sys/class/sensors/ltr553_light/enable
+    chmod 0664 /sys/class/sensors/ltr553_light/enable_wakeup
+    chmod 0664 /sys/class/sensors/ltr553_light/flush
+    chmod 0664 /sys/class/sensors/ltr553_light/max_latency
+    chmod 0664 /sys/class/sensors/ltr553_light/poll_delay
+
+    # ltr553 proximity
+    chown system system /sys/class/sensors/ltr553_proximity/calibrate
+    chown system system /sys/class/sensors/ltr553_proximity/enable
+    chown system system /sys/class/sensors/ltr553_proximity/enable_wakeup
+    chown system system /sys/class/sensors/ltr553_proximity/flush
+    chown system system /sys/class/sensors/ltr553_proximity/max_latency
+    chown system system /sys/class/sensors/ltr553_proximity/poll_delay
+    chmod 0664 /sys/class/sensors/ltr553_proximity/calibrate
+    chmod 0664 /sys/class/sensors/ltr553_proximity/enable
+    chmod 0664 /sys/class/sensors/ltr553_proximity/enable_wakeup
+    chmod 0664 /sys/class/sensors/ltr553_proximity/flush
+    chmod 0664 /sys/class/sensors/ltr553_proximity/max_latency
+    chmod 0664 /sys/class/sensors/ltr553_proximity/poll_delay
+
+    # Accelerator
+    chown system system /sys/class/sensors/lsm6ds3_accelerometer/calibrate
+    chown system system /sys/class/sensors/lsm6ds3_accelerometer/enable
+    chown system system /sys/class/sensors/lsm6ds3_accelerometer/enable_wakeup
+    chown system system /sys/class/sensors/lsm6ds3_accelerometer/flush
+    chown system system /sys/class/sensors/lsm6ds3_accelerometer/max_latency
+    chown system system /sys/class/sensors/lsm6ds3_accelerometer/poll_delay
+    chmod 0664 /sys/class/sensors/lsm6ds3_accelerometer/calibrate
+    chmod 0664 /sys/class/sensors/lsm6ds3_accelerometer/enable
+    chmod 0664 /sys/class/sensors/lsm6ds3_accelerometer/enable_wakeup
+    chmod 0664 /sys/class/sensors/lsm6ds3_accelerometer/flush
+    chmod 0664 /sys/class/sensors/lsm6ds3_accelerometer/max_latency
+    chmod 0664 /sys/class/sensors/lsm6ds3_accelerometer/poll_delay
+
+    # Gyroscope
+    chown system system /sys/class/sensors/lsm6ds3_gyroscope/calibrate
+    chown system system /sys/class/sensors/lsm6ds3_gyroscope/enable
+    chown system system /sys/class/sensors/lsm6ds3_gyroscope/enable_wakeup
+    chown system system /sys/class/sensors/lsm6ds3_gyroscope/flush
+    chown system system /sys/class/sensors/lsm6ds3_gyroscope/max_latency
+    chown system system /sys/class/sensors/lsm6ds3_gyroscope/poll_delay
+    chmod 0664 /sys/class/sensors/lsm6ds3_gyroscope/calibrate
+    chmod 0664 /sys/class/sensors/lsm6ds3_gyroscope/enable
+    chmod 0664 /sys/class/sensors/lsm6ds3_gyroscope/enable_wakeup
+    chmod 0664 /sys/class/sensors/lsm6ds3_gyroscope/flush
+    chmod 0664 /sys/class/sensors/lsm6ds3_gyroscope/max_latency
+    chmod 0664 /sys/class/sensors/lsm6ds3_gyroscope/poll_delay
 
     # Touchscreen
-    chown system system /sys/devices/virtual/touchscreen/touchscreen_dev/gesture_ctrl
-    chmod 0660 /sys/devices/virtual/touchscreen/touchscreen_dev/gesture_ctrl
-
-    chown root system /sys/devices/soc.0/78b9000.i2c/i2c-5/5-005d/keypad_enable
-    chmod 0660 /sys/devices/soc.0/78b9000.i2c/i2c-5/5-005d/keypad_enable
-
-service_redefine config_bt_addr /system/bin/btnvtool -b /system/bin/yl_btmac
-    class core
-    user bluetooth
-    group bluetooth radio
-    oneshot
+    chown system system /sys/mip4_ts/wakeup_gesture
+    chmod 0666 /sys/mip4_ts/wakeup_gesture
 
 service baseband-sh /system/bin/sh /system/etc/set_baseband.sh
     class late_start
