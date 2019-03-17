@@ -55,9 +55,6 @@ TARGET_KERNEL_CONFIG := lineageos_mobee01a_defconfig
 # Manifest
 DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
 
-# LineageHW
-BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/lineagehw
-
 # Properties
 TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
 
