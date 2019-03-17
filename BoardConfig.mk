@@ -45,8 +45,9 @@ TARGET_LIBINIT_MSM8916_DEFINES_FILE := $(DEVICE_PATH)/init/init_mobee01a.cpp
 
 # Kernel
 BOARD_DTBTOOL_ARGS := -2
-BOARD_KERNEL_IMAGE_NAME := Image
+BOARD_KERNEL_IMAGE_NAME := Image.gz
 BOARD_KERNEL_SEPARATED_DT := true
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 LZMA_RAMDISK_TARGETS := recovery
 TARGET_KERNEL_SOURCE := kernel/LYF/mobee01a
 TARGET_KERNEL_CONFIG := lineageos_mobee01a_defconfig
