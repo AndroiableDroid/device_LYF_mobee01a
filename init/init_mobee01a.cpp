@@ -36,6 +36,14 @@
 #include "util.h"
 
 #include "init_msm8916.h"
+#include <android-base/file.h>
+#include <android-base/properties.h>
+#include <android-base/strings.h>
+
+using android::base::GetProperty;
+using android::base::ReadFileToString;
+using android::base::Trim;
+using android::init::property_set;
 
 static int display_density = 320;
 
