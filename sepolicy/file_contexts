@@ -1,2 +1,8 @@
 # Baseband
 /system/etc/set_baseband.sh                                     u:object_r:set_baseband_exec:s0
+
+# Light HAL
+/(vendor|system/vendor)/bin/hw/android\.hardware\.light@2\.0-service\.mobee01a u:object_r:hal_light_default_exec:s0
+
+# Sensors HAL
+/(vendor|system/vendor)/bin/hw/android\.hardware\.sensors@1\.0-service\.mobee01a u:object_r:hal_light_default_exec:s0
