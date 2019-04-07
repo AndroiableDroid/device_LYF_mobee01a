@@ -14,7 +14,7 @@ persist.vendor.audio.fluence.voicerec=false
 persist.vendor.audio.fluence.speaker=false
 
 # Display
-ro.sf.lcd_density=320
+ro.sf.lcd_density=300
 
 # Camera
 persist.camera.cpp.duplication=false
