@@ -35,3 +35,7 @@ service baseband-sh /system/bin/sh /system/etc/set_baseband.sh
     class late_start
     user root
     oneshot
+
+
+on property:sys.boot_completed=1
+    start baseband-sh
