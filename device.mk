@@ -46,6 +46,14 @@ PRODUCT_PACKAGES += \
     android.hardware.camera.provider@2.4-impl \
     camera.device@1.0-impl
 
+# Firmware
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/firmware/emmc_appsboot.mbn:install/firmware-update/emmc_appsboot.mbn \
+    $(LOCAL_PATH)/firmware/NON-HLOS.bin:install/firmware-update/NON-HLOS.bin \
+    $(LOCAL_PATH)/firmware/rpm.mbn:install/firmware-update/rpm.mbn \
+    $(LOCAL_PATH)/firmware/sbl1.mbn:install/firmware-update/sbl1.mbn \
+    $(LOCAL_PATH)/firmware/tz.mbn:install/firmware-update/tz.mbn
+
 # Init scripts
 PRODUCT_PACKAGES += \
     fstab.qcom \
