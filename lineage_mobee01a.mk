@@ -25,6 +25,9 @@ PRODUCT_NAME := lineage_mobee01a
 BOARD_VENDOR := LYF
 PRODUCT_DEVICE := mobee01a
 
+# Vendor security patch level
+VENDOR_SECURITY_PATCH := 2019-03-01
+
 PRODUCT_GMS_CLIENTID_BASE := android-ckt
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
