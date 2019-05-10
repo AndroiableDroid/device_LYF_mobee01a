@@ -1,0 +1,19 @@
+[
+  {
+    "remote": "github",
+    "repository": "AndroiableDroid/Destructive_Kernel",
+    "target_path": "kernel/LYF/mobee01a",
+    "revision": "Destructive"
+  },
+  {
+    "remote": "github",
+    "repository": "AndroiableDroid/android_device_LYF_msm8916-common",
+    "target_path": "device/LYF/msm8916-common"
+  },
+  {
+    "remote": "github",
+    "repository": "dotOS-Devices/proprietary_vendor_LYF_LS-5015",
+    "target_path": "vendor/LYF/mobee01a",
+    "revision": "dot-p"
+  }
+]
