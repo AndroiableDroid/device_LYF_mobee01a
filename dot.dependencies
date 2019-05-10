@@ -13,7 +13,7 @@
   {
     "remote": "github",
     "repository": "dotOS-Devices/proprietary_vendor_LYF_LS-5015",
-    "target_path": "vendor/LYF/mobee01a",
+    "target_path": "vendor/LYF",
     "revision": "dot-p"
   }
 ]
