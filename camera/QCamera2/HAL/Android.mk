@@ -71,16 +71,13 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/tsMakeuplib/include
 endif
 LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 
-LOCAL_SHARED_LIBRARIES := libEGL liblog libhardware libutils libcutils libdl libsync
+LOCAL_SHARED_LIBRARIES := libEGL liblog libhardware libutils libcutils libdl
 LOCAL_SHARED_LIBRARIES += libmmcamera_interface libmmjpeg_interface libqdMetaData
-LOCAL_SHARED_LIBRARIES += libhidltransport android.hidl.token@1.0-utils android.hardware.graphics.bufferqueue@1.0
 ifeq ($(TARGET_TS_MAKEUP),true)
 LOCAL_SHARED_LIBRARIES += libts_face_beautify_hal libts_detected_face_hal
 endif
 LOCAL_HEADER_LIBRARIES := media_plugin_headers
 LOCAL_SHARED_LIBRARIES += libqdMetaData libqservice libbinder
-LOCAL_STATIC_LIBRARIES := libarect libbase
-
 LOCAL_HEADER_LIBRARIES += media_plugin_headers
 
 LOCAL_HEADER_LIBRARIES += libnativebase_headers libhardware_headers
