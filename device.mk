@@ -44,7 +44,8 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     android.hardware.camera.provider@2.4-impl \
-    camera.device@1.0-impl
+    android.hardware.camera.provider@2.4-service.mobee01a \
+    camera.device@3.2-impl
 
 # Firmware
 PRODUCT_COPY_FILES += \
