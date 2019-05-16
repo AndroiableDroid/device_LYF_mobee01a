@@ -7,7 +7,7 @@
   },
   {
     "remote": "github",
-    "repository": "AndroiableDroid/android_device_LYF_msm8916-common",
+    "repository": "AndroiableDroid/device_LYF_msm8916-common",
     "target_path": "device/LYF/msm8916-common"
   },
   {
