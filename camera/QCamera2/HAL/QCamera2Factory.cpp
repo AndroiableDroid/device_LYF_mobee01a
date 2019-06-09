@@ -40,6 +40,11 @@ namespace qcamera {
 
 QCamera2Factory gQCamera2Factory;
 
+pthread_mutex_t gCamLock = PTHREAD_MUTEX_INITIALIZER;
+//Total number of cameras opened simultaneously.
+//This variable updation is protected by gCamLock.
+uint8_t gNumCameraSessions = 0;
+
 /*===========================================================================
  * FUNCTION   : QCamera2Factory
  *
@@ -157,6 +162,8 @@ int QCamera2Factory::cameraDeviceOpen(int camera_id,
                     struct hw_device_t **hw_device)
 {
     int rc = NO_ERROR;
+    int cameraretry = 0;
+
     if (camera_id < 0 || camera_id >= mNumOfCameras)
         return BAD_VALUE;
 
@@ -165,7 +172,16 @@ int QCamera2Factory::cameraDeviceOpen(int camera_id,
         ALOGE("Allocation of hardware interface failed");
         return NO_MEMORY;
     }
-    rc = hw->openCamera(hw_device);
+    while (cameraretry < 3) {
+        rc = hw->openCamera(hw_device);
+        if (rc == NO_ERROR)
+            break;
+
+        cameraretry++;
+        ALOGV("%s: open failed - retrying attempt %d",__FUNCTION__, cameraretry);
+        sleep(2);
+    }
+
     if (rc != NO_ERROR) {
         delete hw;
     }
