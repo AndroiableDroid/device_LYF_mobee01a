@@ -1,9 +1,9 @@
 [
   {
     "remote": "github",
-    "repository": "AndroiableDroid/Destructive_Kernel",
+    "repository": "AndroiableDroid/kernel",
     "target_path": "kernel/LYF/mobee01a",
-    "revision": "Destructive"
+    "revision": "pie-mr1"
   },
   {
     "remote": "github",
