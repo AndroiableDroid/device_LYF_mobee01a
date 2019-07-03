@@ -569,7 +569,6 @@ private:
     // and beforeany focus callback/cancel_focus happens. This flag is not an indication
     // of whether lens is moving or not.
     bool m_bAutoFocusRunning;
-    cam_autofocus_state_t m_currentFocusState;
 
     power_module_t *m_pPowerModule;   // power module
 
@@ -656,8 +655,6 @@ private:
     bool mPreviewFrameSkipValid;
     cam_frame_idx_range_t mPreviewFrameSkipIdxRange;
     int32_t mNumPreviewFaces;
-    nsecs_t mLastAFScanTime;
-    nsecs_t mLastCaptureTime;
     bool mAdvancedCaptureConfigured;
     bool mFPSReconfigure;
    //ts add for makeup

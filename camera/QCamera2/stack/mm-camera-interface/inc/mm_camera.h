@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2014,2016 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -45,8 +45,8 @@
 #define MM_CAMERA_CHANNEL_POLL_THREAD_MAX 1
 
 #define MM_CAMERA_DEV_NAME_LEN 32
-#define MM_CAMERA_DEV_OPEN_TRIES 10
-#define MM_CAMERA_DEV_OPEN_RETRY_SLEEP 40
+#define MM_CAMERA_DEV_OPEN_TRIES 20
+#define MM_CAMERA_DEV_OPEN_RETRY_SLEEP 20
 #define THREAD_NAME_SIZE 15
 
 #define MM_CAMERA_POST_FLASH_PREVIEW_SKIP_CNT 3

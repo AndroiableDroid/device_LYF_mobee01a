@@ -38,6 +38,11 @@
 #include <utils/Trace.h>
 #include "gralloc_priv.h"
 
+#include <binder/Parcel.h>
+#include <binder/IServiceManager.h>
+#include <utils/RefBase.h>
+#include <QServiceUtils.h>
+
 #include "QCamera2HWI.h"
 #include "QCameraMem.h"
 
@@ -56,8 +61,9 @@ namespace qcamera {
 cam_capability_t *gCamCapability[MM_CAMERA_MAX_NUM_SENSORS];
 qcamera_saved_sizes_list savedSizes[MM_CAMERA_MAX_NUM_SENSORS];
 
-static pthread_mutex_t g_camlock = PTHREAD_MUTEX_INITIALIZER;
+extern pthread_mutex_t gCamLock;
 volatile uint32_t gCamHalLogLevel = 0;
+extern uint8_t gNumCameraSessions;
 
 camera_device_ops_t QCamera2HardwareInterface::mCameraOps = {
     .set_preview_window =         QCamera2HardwareInterface::set_preview_window,
@@ -577,6 +583,11 @@ int QCamera2HardwareInterface::auto_focus(struct camera_device *device)
         return BAD_VALUE;
     }
     CDBG_HIGH("[KPI Perf] %s : E PROFILE_AUTO_FOCUS", __func__);
+    if (hw->mParameters.isAFRunning()) {
+        CDBG_HIGH("[KPI_Perf] %s : X AutoFocus is already active, returning!!",
+                   __func__);
+        return NO_ERROR;
+    }
     hw->lockAPI();
     qcamera_api_result_t apiResult;
     ret = hw->processAPI(QCAMERA_SM_EVT_START_AUTO_FOCUS, NULL);
@@ -673,7 +684,6 @@ int QCamera2HardwareInterface::take_picture(struct camera_device *device)
     }
 
     hw->unlockAPI();
-    hw->mLastCaptureTime = systemTime();
     CDBG_HIGH("[KPI Perf] %s: X", __func__);
     return ret;
 }
@@ -1001,7 +1011,6 @@ QCamera2HardwareInterface::QCamera2HardwareInterface(uint32_t cameraId)
       m_bShutterSoundPlayed(false),
       m_bPreviewStarted(false),
       m_bRecordStarted(false),
-      m_currentFocusState(CAM_AF_SCANNING),
       m_pPowerModule(NULL),
       mDumpFrmCnt(0U),
       mDumpSkipCnt(0U),
@@ -1029,8 +1038,6 @@ QCamera2HardwareInterface::QCamera2HardwareInterface(uint32_t cameraId)
       mRawdataJob(-1),
       mPreviewFrameSkipValid(0),
       mNumPreviewFaces(-1),
-      mLastAFScanTime(0),
-      mLastCaptureTime(0),
       mAdvancedCaptureConfigured(false),
       mFPSReconfigure(false),
       mVideoMem(NULL)
@@ -1281,14 +1288,25 @@ int QCamera2HardwareInterface::openCamera()
         gCamCapability[mCameraId]->padding_info.plane_padding = padding_info.plane_padding;
     }
 
-    // Hard-code padding for OnePlus X
-    gCamCapability[mCameraId]->padding_info.width_padding = CAM_PAD_TO_64;
-    gCamCapability[mCameraId]->padding_info.height_padding = CAM_PAD_TO_64;
-    gCamCapability[mCameraId]->padding_info.plane_padding = CAM_PAD_TO_64;
-
     mParameters.init(gCamCapability[mCameraId], mCameraHandle, this, this);
 
     mCameraOpened = true;
+
+    //Notify display HAL that a camera session is active
+    //But avoid calling the same during bootup because camera service might open/close
+    //cameras at boot time during its initialization and display service will also internally
+    //wait for camera service to initialize first while calling this display API, resulting in a
+    //deadlock situation. Since boot time camera open/close calls are made only to fetch
+    //capabilities, no need of this display bw optimization.
+    //Use "service.bootanim.exit" property to know boot status.
+    property_get("service.bootanim.exit", value, "0");
+    if (atoi(value) == 1) {
+        pthread_mutex_lock(&gCamLock);
+        if (gNumCameraSessions++ == 0) {
+            setCameraLaunchStatus(true);
+        }
+        pthread_mutex_unlock(&gCamLock);
+    }
 
     return NO_ERROR;
 }
@@ -1308,6 +1326,7 @@ int QCamera2HardwareInterface::closeCamera()
 {
     int rc = NO_ERROR;
     int i;
+    char value[PROPERTY_VALUE_MAX];
     CDBG_HIGH("%s: E", __func__);
     if (!mCameraOpened) {
         return NO_ERROR;
@@ -1357,6 +1376,19 @@ int QCamera2HardwareInterface::closeCamera()
     if (mExifParams.debug_params) {
         free(mExifParams.debug_params);
     }
+
+    //Notify display HAL that there is no active camera session
+    //but avoid calling the same during bootup. Refer to openCamera
+    //for more details.
+    property_get("service.bootanim.exit", value, "0");
+    if (atoi(value) == 1) {
+        pthread_mutex_lock(&gCamLock);
+        if (--gNumCameraSessions == 0) {
+            setCameraLaunchStatus(false);
+        }
+        pthread_mutex_unlock(&gCamLock);
+    }
+
     CDBG_HIGH("%s: X", __func__);
     return rc;
 }
@@ -1455,10 +1487,10 @@ int QCamera2HardwareInterface::getCapabilities(uint32_t cameraId,
     ATRACE_CALL();
     int rc = NO_ERROR;
     struct  camera_info *p_info;
-    pthread_mutex_lock(&g_camlock);
+    pthread_mutex_lock(&gCamLock);
     p_info = get_cam_info(cameraId);
     memcpy(info, p_info, sizeof (struct camera_info));
-    pthread_mutex_unlock(&g_camlock);
+    pthread_mutex_unlock(&gCamLock);
     return rc;
 }
 
@@ -1479,8 +1511,7 @@ int QCamera2HardwareInterface::prepareTorchCamera()
     int rc = NO_ERROR;
 
     if ( ( !m_stateMachine.isPreviewRunning() ) &&
-            !m_stateMachine.isPreviewReady() &&
-            ( m_channels[QCAMERA_CH_TYPE_PREVIEW] == NULL ) ) {
+         ( m_channels[QCAMERA_CH_TYPE_PREVIEW] == NULL ) ) {
         rc = addChannel(QCAMERA_CH_TYPE_PREVIEW);
         waitDefferedWork(mMetadataJob);
     }
@@ -1503,8 +1534,7 @@ int QCamera2HardwareInterface::prepareTorchCamera()
 int QCamera2HardwareInterface::releaseTorchCamera()
 {
     if ( !m_stateMachine.isPreviewRunning() &&
-            !m_stateMachine.isPreviewReady() &&
-            ( m_channels[QCAMERA_CH_TYPE_PREVIEW] != NULL ) ) {
+         ( m_channels[QCAMERA_CH_TYPE_PREVIEW] != NULL ) ) {
         delete m_channels[QCAMERA_CH_TYPE_PREVIEW];
         m_channels[QCAMERA_CH_TYPE_PREVIEW] = NULL;
     }
@@ -1797,7 +1827,7 @@ QCameraMemory *QCamera2HardwareInterface::allocateStreamBuf(
             bCachedMem = mParameters.isVideoBuffersCached();
             CDBG_HIGH("%s: %s video buf allocated ", __func__,
                     (bCachedMem == 0) ? "Uncached" : "Cached" );
-           QCameraVideoMemory *videoMemory = new QCameraVideoMemory(mGetMemory,  mCallbackCookie, bCachedMem);
+            QCameraVideoMemory *videoMemory = new QCameraVideoMemory(mGetMemory, mCallbackCookie, bCachedMem);
             mem = videoMemory;
             mVideoMem = videoMemory;
         }
@@ -2321,8 +2351,8 @@ int QCamera2HardwareInterface::autoFocus()
     setCancelAutoFocus(false);
     mActiveAF = true;
     cam_focus_mode_type focusMode = mParameters.getFocusMode();
-    CDBG_HIGH("[AF_DBG] %s: focusMode=%d, m_currentFocusState=%d, m_bAFRunning=%d",
-          __func__, focusMode, m_currentFocusState, isAFRunning());
+    CDBG_HIGH("[AF_DBG] %s: focusMode=%d",
+          __func__, focusMode);
 
     switch (focusMode) {
     case CAM_FOCUS_MODE_AUTO:
@@ -4102,11 +4132,11 @@ int32_t QCamera2HardwareInterface::processAutoFocusEvent(cam_auto_focus_data_t &
     int32_t ret = NO_ERROR;
     CDBG_HIGH("%s: E",__func__);
 
-    m_currentFocusState = focus_data.focus_state;
+    mParameters.setFocusState(focus_data.focus_state);
 
     cam_focus_mode_type focusMode = mParameters.getFocusMode();
-    CDBG_HIGH("[AF_DBG] %s: focusMode=%d, m_currentFocusState=%d, m_bAFRunning=%d",
-         __func__, focusMode, m_currentFocusState, isAFRunning());
+    CDBG_HIGH("[AF_DBG] %s: focusMode=%d",
+         __func__, focusMode);
 
     switch (focusMode) {
     case CAM_FOCUS_MODE_AUTO:
@@ -4329,7 +4359,7 @@ int32_t QCamera2HardwareInterface::processHDRData(cam_asd_hdr_scene_data_t hdr_s
         }
     }
 
-    ALOGD("%s : hdr_scene_data: processHDRData: %d %f",
+    CDBG("%s : hdr_scene_data: processHDRData: %d %f",
           __func__,
           hdr_scene.is_hdr_scene,
           hdr_scene.hdr_confidence);
@@ -6454,26 +6484,6 @@ bool QCamera2HardwareInterface::isPreviewRestartEnabled()
     return earlyRestart == 1;
 }
 
-/*===========================================================================
-=======
- * FUNCTION   : isAFRunning
- *
- * DESCRIPTION: if AF is in progress while in Auto/Macro focus modes
- *
- * PARAMETERS : none
- *
- * RETURN     : true: AF in progress
- *              false: AF not in progress
- *==========================================================================*/
-bool QCamera2HardwareInterface::isAFRunning()
-{
-    bool isAFInProgress = (m_currentFocusState == CAM_AF_SCANNING &&
-            (mParameters.getFocusMode() == CAM_FOCUS_MODE_AUTO ||
-            mParameters.getFocusMode() == CAM_FOCUS_MODE_MACRO));
-
-    return isAFInProgress;
-}
-
 bool QCamera2HardwareInterface::needDualReprocess()
 {
     bool ret = false;
@@ -7334,14 +7344,12 @@ bool QCamera2HardwareInterface::isRegularCapture()
 {
     bool ret = false;
 
-#if 0
     if (numOfSnapshotsExpected() == 1 &&
         !isLongshotEnabled() &&
         !mParameters.getRecordingHintValue() &&
         !isZSLMode() && !(mParameters.isHDREnabled())) {
             ret = true;
     }
-#endif
     return ret;
 }
 

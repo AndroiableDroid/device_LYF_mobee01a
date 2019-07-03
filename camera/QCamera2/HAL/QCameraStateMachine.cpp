@@ -1234,6 +1234,8 @@ int32_t QCameraStateMachine::procEvtPreviewingState(qcamera_sm_evt_enum_t evt,
             ALOGW("Free video handle %d %d", evt, m_state);
             QCameraVideoMemory::closeNativeHandle((const void *)payload);
         }
+    case QCAMERA_SM_EVT_CANCEL_PICTURE:
+    case QCAMERA_SM_EVT_STOP_RECORDING:
     case QCAMERA_SM_EVT_RELEASE:
         {
             ALOGE("%s: cannot handle evt(%d) in state(%d)", __func__, evt, m_state);
@@ -1242,18 +1244,6 @@ int32_t QCameraStateMachine::procEvtPreviewingState(qcamera_sm_evt_enum_t evt,
             result.request_api = evt;
             result.result_type = QCAMERA_API_RESULT_TYPE_DEF;
             m_parent->signalAPIResult(&result);
-        }
-        break;
-    case QCAMERA_SM_EVT_CANCEL_PICTURE:
-    case QCAMERA_SM_EVT_STOP_RECORDING:
-        {
-            // no op needed here
-            ALOGW("No ops for evt(%d) in state(%d)", evt, m_state);
-            result.status = NO_ERROR;
-            result.request_api = evt;
-            result.result_type = QCAMERA_API_RESULT_TYPE_DEF;
-            m_parent->signalAPIResult(&result);
-
         }
         break;
     case QCAMERA_SM_EVT_EVT_INTERNAL:
@@ -3009,26 +2999,6 @@ bool QCameraStateMachine::isPreviewRunning()
     case QCAMERA_SM_STATE_VIDEO_PIC_TAKING:
     case QCAMERA_SM_STATE_PREVIEW_PIC_TAKING:
     case QCAMERA_SM_STATE_PREPARE_SNAPSHOT:
-    case QCAMERA_SM_STATE_PREVIEW_READY:
-        return true;
-    default:
-        return false;
-    }
-}
-
-/*===========================================================================
- * FUNCTION   : isPreviewReady
- *
- * DESCRIPTION: check if preview is in ready state.
- *
- * PARAMETERS : None
- *
- * RETURN     : true -- preview is in ready state
- *              false -- preview is stopped
- *==========================================================================*/
-bool QCameraStateMachine::isPreviewReady()
-{
-    switch (m_state) {
     case QCAMERA_SM_STATE_PREVIEW_READY:
         return true;
     default:
