@@ -1,13 +1,13 @@
 [
   {
     "remote": "github",
-    "repository": "AndroiableDroid/kernel",
+    "repository": "dotOs-devices/android_kernel_LS-5015",
     "target_path": "kernel/LYF/mobee01a",
     "revision": "pie-mr1"
   },
   {
     "remote": "github",
-    "repository": "AndroiableDroid/device_LYF_msm8916-common",
+    "repository": "dotOs-devices/device_LYF_msm8916-common",
     "target_path": "device/LYF/msm8916-common",
     "revision": "lineage-16.0"
   },
