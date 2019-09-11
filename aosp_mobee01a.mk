@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, device/LYF/mobee01a/full_mobee01a.mk)
-
-# Inherit some common LineageOS stuff.
-$(call inherit-product, vendor/dot/config/common.mk)
+# Inherit from those products. Most specific first.
+$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_l_mr1.mk)
 
 # Must define platform variant before including any common things
 TARGET_BOARD_PLATFORM_VARIANT := msm8939
 
-PRODUCT_NAME := dot_mobee01a
+PRODUCT_NAME := aosp_mobee01a
 BOARD_VENDOR := LYF
 PRODUCT_DEVICE := mobee01a
 
@@ -29,7 +30,9 @@ PRODUCT_DEVICE := mobee01a
 VENDOR_SECURITY_PATCH := 2019-03-01
 
 TARGET_BOOT_ANIMATION_RES := 720
-
+PRODUCT_BRAND := LYF
+PRODUCT_MODEL := Water 8
+PRODUCT_MANUFACTURER := LYF
 PRODUCT_GMS_CLIENTID_BASE := android-ckt
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
