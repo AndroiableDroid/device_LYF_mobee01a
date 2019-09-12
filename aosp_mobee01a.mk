@@ -22,6 +22,9 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_l_mr1.mk
 # Must define platform variant before including any common things
 TARGET_BOARD_PLATFORM_VARIANT := msm8939
 
+# Inherit from mobee01a device
+$(call inherit-product, device/LYF/mobee01a/device.mk)
+
 PRODUCT_NAME := aosp_mobee01a
 BOARD_VENDOR := LYF
 PRODUCT_DEVICE := mobee01a
