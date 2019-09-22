@@ -62,7 +62,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     fstab.qcom \
     init.target.rc \
-    set_baseband.sh
+    set_baseband.sh \
+    libinit_mobee01a
 
 # Keylayout
 PRODUCT_COPY_FILES += \

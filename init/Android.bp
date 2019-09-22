@@ -1,0 +1,11 @@
+cc_library_static {
+    name: "libinit_mobee01a",
+    recovery_available: true,
+    cpp_std: "c++17",
+    include_dirs: [
+        "system/core/base/include",
+        "system/core/init",
+    ],
+    srcs: ["init_mobee01a.cpp"],
+    static_libs: ["libbase"],
+}
