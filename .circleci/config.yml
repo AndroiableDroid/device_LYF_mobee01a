@@ -37,7 +37,7 @@ jobs:
             echo "Initialize & Sync PBRP repo"
             echo $(pwd)
             repo init --depth=1 -q -u git://github.com/LineageOS/android.git -b ${MANIFEST_BRANCH}
-            for i in $(ls $(pwd) | grep -v .circle) do rm -rf $i; done
+            for i in $(ls $(pwd) | grep -v .circle) do; rm -rf ${i}; done
             time repo sync -c -f -q --force-sync --no-clone-bundle --no-tags -j32
             echo "Clean up the .repo, no use of it"
             cp .repo/manifests/default.xml $(pwd)/default.xml
