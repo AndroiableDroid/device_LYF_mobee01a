@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       # primary image
-      - image: yshalsager/cyanogenmod:latest
+      - image: kylemanna/aosp:latest
       # secondary image
       - image: circleci/openjdk:8-jdk
       # github releases
