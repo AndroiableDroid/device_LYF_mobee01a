@@ -8,7 +8,7 @@ jobs:
       - image: circleci/openjdk:8-jdk
       # github releases
       - image: cibuilds/github:0.10
-    working_directory: /home/cmbuild/twrp
+    working_directory: /aosp
     steps:
       - checkout
       - run:
