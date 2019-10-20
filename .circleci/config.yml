@@ -1,0 +1,63 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # primary image
+      - image: yshalsager/cyanogenmod:latest
+      # secondary image
+      - image: circleci/openjdk:8-jdk
+      # github releases
+      - image: cibuilds/github:0.10
+    working_directory: /home/cmbuild/twrp
+    steps:
+      - checkout
+      - run:
+          name: AIO Build
+          command: |
+            echo "Initializing"
+            export MANIFEST_BRANCH="lineage-16.0"
+            DIR=$(pwd) && echo $DIR
+            echo "Make Up2date"
+            sudo apt-get -qqy update && sudo apt-get -qqy upgrade && sudo apt-get update && sudo apt-get --assume-yes install wget libstdc++6 software-properties-common && sudo apt-get update && sudo add-apt-repository ppa:openjdk-r/ppa -y && sudo apt-get update && sudo apt-get purge --auto-remove openjdk* -y && sudo apt-get install openjdk-8-jdk -y && sudo update-alternatives --config java
+            echo "Setup all the prerequisites"
+            PATH=~/bin:$PATH
+            rm -rf $(la | grep -v .circleci)
+            curl --create-dirs -L -o ~/bin/repo -O -L https://github.com/akhilnarang/repo/raw/master/repo
+            chmod a+x ~/bin/repo
+            echo "Install ghr binary"
+            wget -q 'https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz'
+            tar -xzf ghr_v0.13.0_linux_amd64.tar.gz && rm ghr_v0.13.0_linux_amd64.tar.gz
+            cp ghr_v0.13.0_linux_amd64/ghr ~/bin && PATH=~/bin:$PATH
+            rm -rf ghr_v0.13.0_linux_amd64/
+            which ghr
+            which repo
+            echo "Set GitAuth Infos too"
+            git config --global user.email $GitHubMail
+            git config --global user.name $GitHubName
+            git config --global color.ui true
+            echo "Initialize & Sync PBRP repo"
+            echo $(pwd)
+            repo init --depth=1 -q -u git://github.com/LineageOS/android.git -b ${MANIFEST_BRANCH}
+            time repo sync -c -f -q --force-sync --no-clone-bundle --no-tags -j32
+            echo "Clean up the .repo, no use of it"
+            cp .repo/manifests/default.xml $(pwd)/default.xml
+            rm -rf .repo
+            echo "Source Files are Here now"
+            ls -la .
+            echo "Get the Device Tree on place"
+            mkdir -p .repo/manifests && mv default.xml .repo/manifests/default.xml
+            git clone https://github.com/AndroiableDroid/device_LYF_mobee01a -b lineage-16.0 device/LYF/mobee01a
+            git clone https://github.com/AndroiableDroid/device_LYF_msm8916-common -b lineage-16.0 device/LYF/msm8916-common
+            git clone https://github.com/AndroiableDroid/kernel -b binder kernel/LYF/mobee01a --depth=1
+            git clone https://github.com/AndroiableDroid/vendor_LYF -b lineage-16.0 --depth=1 vendor/LYF
+            echo "Start the Build Process"
+            source build/envsetup.sh
+            brunch mobee01a
+            echo "Deploying"
+            export BUILDFILE=$(find $(pwd)/out/target/product/${CODENAME}/lineage*.zip 2>/dev/null)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ${BUILDFILE}
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
