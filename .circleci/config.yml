@@ -21,7 +21,6 @@ jobs:
             sudo apt-get -qqy update && sudo apt-get -qqy upgrade && sudo apt-get update && sudo apt-get --assume-yes install wget libstdc++6 software-properties-common && sudo apt-get update && sudo add-apt-repository ppa:openjdk-r/ppa -y && sudo apt-get update && sudo apt-get purge --auto-remove openjdk* -y && sudo apt-get install openjdk-8-jdk -y && sudo update-alternatives --config java
             echo "Setup all the prerequisites"
             PATH=~/bin:$PATH
-            rm -rf $(la | grep -v .circleci)
             curl --create-dirs -L -o ~/bin/repo -O -L https://github.com/akhilnarang/repo/raw/master/repo
             chmod a+x ~/bin/repo
             echo "Install ghr binary"
